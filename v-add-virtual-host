@@ -1,0 +1,124 @@
+#!/bin/bash
+CF_black=`tput setaf 0`
+CF_red=`tput setaf 1`
+CF_green=`tput setaf 2`
+CF_yellow=`tput setaf 3`
+CF_blue=`tput setaf 4`
+CF_magenta=`tput setaf 5`
+CF_cyan=`tput setaf 6`
+CF_white=`tput setaf 7`
+BF_black=`tput setab 0`
+BF_red=`tput setab 1`
+BF_green=`tput setab 2`
+BF_yellow=`tput setab 3`
+BF_blue=`tput setab 4`
+BF_magenta=`tput setab 5`
+BF_cyan=`tput setab 6`
+BF_white=`tput setab 7`
+TX_bold=`tput bold`
+CLREOL=$'\x1B[K'
+RESET=`tput sgr0`
+
+domain=${1}
+tld=".local"
+folder=${2}
+docRootFolder=""
+confPath="/usr/local/etc/nginx/servers/$domain$tld.conf"
+
+echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -e "\n  Nginx Virtual Host Setup by Yahya ERTURAN <root@yahyaerturan.com>${CLREOL}"
+echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo ${RESET};
+
+if [[ -z $domain ]]; then
+    echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
+    echo -e "\n  You must specify a domain name without .tld:${CLREOL}\n${CLREOL}"
+    echo -e "  Usage: ${CF_cyan}add-host [domain] [?documentRootFolder]${CLREOL}"
+    echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
+    echo ${RESET}
+    exit
+fi
+
+if [[ -z $folder ]]; then
+    docRootFolder=""
+else
+    docRootFolder="/$folder"
+fi
+
+echo -e "\n Usage: ${CF_cyan}add-host [domain] [?documentRootFolder]${RESET}\n"
+echo -e " Domain name is also folder name under your Sites folder. For example:"
+echo -e "   ${CF_cyan}add-host $domain${RESET}"
+echo -e "   This will turn to ${BF_blue}${CF_white}${TX_bold}$domain$tld${RESET}"
+echo -e "   Document root to be set as ${CF_magenta}${TX_bold}$HOME/Sites/$domain${RESET} \n"
+echo -e " You can set a second parameter to set a different root folder:"
+echo -e "   ${CF_cyan}add-host $domain public${RESET}"
+echo -e "   This will set document root as ${CF_magenta}${TX_bold}$HOME/Sites/$domain/public \n${RESET}"
+
+read -r -p "Are you sure you entered correct information at your command arguments? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY]) 
+        echo -e "Initializing...\n"
+        ;;
+    *)
+        exit
+        ;;
+esac
+
+echo -e "  Your Virtual Host is being created... \n"
+touch $confPath
+echo -e "server {" >> $confPath
+echo -e "    listen 80;" >> $confPath
+echo -e "" >> $confPath
+echo -e "    server_name $domain$tld;" >> $confPath
+echo -e "" >> $confPath
+echo -e "    root $HOME/Sites/$domain$docRootFolder;" >> $confPath
+echo -e "" >> $confPath
+echo -e "    location / {" >> $confPath
+echo -e "        # try to serve file directly, fallback to index.php" >> $confPath
+echo -e "        try_files \$uri /index.php\$is_args\$args;" >> $confPath
+echo -e "    }" >> $confPath
+echo -e "" >> $confPath
+echo -e "    location ~ ^/index\.php(/|\$) {" >> $confPath
+echo -e "        # Comment the next line and uncomment the next to enable dynamic resolution (incompatible with Kubernetes)" >> $confPath
+echo -e "        fastcgi_pass localhost:9000;" >> $confPath
+echo -e "        #resolver 127.0.0.11;" >> $confPath
+echo -e "        #set \$upstream_host php;" >> $confPath
+echo -e "        #fastcgi_pass \$upstream_host:9000;" >> $confPath
+echo -e "" >> $confPath
+echo -e "        fastcgi_split_path_info ^(.+\.php)(/.*)\$;" >> $confPath
+echo -e "        include fastcgi_params;" >> $confPath
+echo -e "        # When you are using symlinks to link the document root to the" >> $confPath
+echo -e "        # current version of your application, you should pass the real" >> $confPath
+echo -e "        # application path instead of the path to the symlink to PHP" >> $confPath
+echo -e "        # FPM." >> $confPath
+echo -e "        # Otherwise, PHP's OPcache may not properly detect changes to" >> $confPath
+echo -e "        # your PHP files (see https://github.com/zendtech/ZendOptimizerPlus/issues/126" >> $confPath
+echo -e "        # for more information)." >> $confPath
+echo -e "        fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;" >> $confPath
+echo -e "        fastcgi_param DOCUMENT_ROOT \$realpath_root;" >> $confPath
+echo -e "        # Prevents URIs that include the front controller. This will 404:" >> $confPath
+echo -e "        # http://domain.tld/index.php/some-path" >> $confPath
+echo -e "        # Remove the internal directive to allow URIs like this" >> $confPath
+echo -e "        internal;" >> $confPath
+echo -e "    }" >> $confPath
+echo -e "\n" >> $confPath
+echo -e "    # return 404 for all other php files not matching the front controller" >> $confPath
+echo -e "    # this prevents access to other php files you don't want to be accessible." >> $confPath
+echo -e "    location ~ \.php\$ {" >> $confPath
+echo -e "        return 404;" >> $confPath
+echo -e "    }" >> $confPath
+echo -e "}" >> $confPath
+echo -e "  $confPath is created \n"
+
+echo -e "  Restarting PHP 7.2..."
+brew services restart php@7.2
+echo "  Restarting Nginx..."
+brew services restart nginx
+echo -e "\n  ${CF_green}Good to go.. If you need to edit conf file, type:${RESET}"
+echo -e "  ${CF_cyan}sublime /etc/nginx/servers/$domain$tld.conf${RESET}\n"
+echo -e "  Browse at    : ${CF_green}${TX_bold}http://$domain$tld/${RESET}"
+echo -e "  DocumentRoot : ${CF_cyan}${TX_bold}$HOME/Sites/$domain$docRootFolder ${RESET}\n"
+
+echo "  Enabling $domain at /etc/hosts... Running v-add-domain ..."
+# sudo echo "127.0.0.1 $domain$tld" >> /etc/hosts
+v-add-domain $domain$tld
