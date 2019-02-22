@@ -5,5 +5,5 @@ Copy/move this files to `$HOME/Bin` folder and make sure you added this director
 
 ```bash
 # ~/.bashrc or ~/.bash_profile
-echo "export PATH="$HOME/Bin:$PATH"
+export PATH="$HOME/Bin:$PATH"
 ```
