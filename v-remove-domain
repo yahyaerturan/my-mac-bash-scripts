@@ -1,0 +1,52 @@
+#!/bin/bash
+(( EUID != 0 )) && exec sudo -- "$0" "$@"
+
+CF_black=`tput setaf 0`
+CF_red=`tput setaf 1`
+CF_green=`tput setaf 2`
+CF_yellow=`tput setaf 3`
+CF_blue=`tput setaf 4`
+CF_magenta=`tput setaf 5`
+CF_cyan=`tput setaf 6`
+CF_white=`tput setaf 7`
+BF_black=`tput setab 0`
+BF_red=`tput setab 1`
+BF_green=`tput setab 2`
+BF_yellow=`tput setab 3`
+BF_blue=`tput setab 4`
+BF_magenta=`tput setab 5`
+BF_cyan=`tput setab 6`
+BF_white=`tput setab 7`
+TX_bold=`tput bold`
+CLREOL=$'\x1B[K'
+RESET=`tput sgr0`
+
+echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -e "\n  etc/hosts Setup by Yahya ERTURAN <root@yahyaerturan.com>${CLREOL}"
+echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo ${RESET};
+
+# Fetch paramaters
+domain=${1}
+
+if [[ -z $domain ]]; then
+    echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
+    echo -e "\n  You must specify a domain name with .tld|com|net|org|tld:${CLREOL}\n${CLREOL}"
+    echo -e "  e.g. v-remove-domain vayes-eys.local ${CLREOL}"
+    echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
+    echo ${RESET}
+    exit
+else
+    echo "Attempting to remove $domain:"
+	sudo sed -i.bak "/$domain/d" /etc/hosts
+
+    if grep -q "$domain" /etc/hosts; then
+		echo "An error occured!	$domain is still on your etc/hosts!";,
+		echo "***";
+		cat /etc/hosts | grep "$domain";
+		echo "***";
+	else
+		echo "$domain is removed from your /etc/hosts succesfully!";
+	fi
+fi
+
