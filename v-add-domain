@@ -32,8 +32,8 @@ fakeIP=${2}
 
 if [[ -z $domain ]]; then
     echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
-    echo -e "\n  You must specify a domain name wit .tld|com|net|org|tld:${CLREOL}\n${CLREOL}"
-    echo -e "  e.g. vayes-eys.local ${CLREOL}"
+    echo -e "\n  You must specify a domain name with .tld|com|net|org|tld:${CLREOL}\n${CLREOL}"
+    echo -e "  e.g. v-add-domain vayes-eys.local ${CLREOL}"
     echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
     echo ${RESET}
     exit
