@@ -25,9 +25,9 @@ folder=${2}
 docRootFolder=""
 confPath="/usr/local/etc/nginx/servers/$domain$tld.conf"
 
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo -e "\n  Nginx Virtual Host Setup by Yahya ERTURAN <root@yahyaerturan.com>${CLREOL}"
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo ${RESET};
 
 if [[ -z $domain ]]; then
@@ -54,7 +54,7 @@ echo -e " You can set a second parameter to set a different root folder:"
 echo -e "   ${CF_cyan}add-host $domain public${RESET}"
 echo -e "   This will set document root as ${CF_magenta}${TX_bold}$HOME/Sites/$domain/public \n${RESET}"
 
-read -r -p "Are you sure you entered correct information at your command arguments? [y/N] " response
+read -r -p "${CF_red}${TX_bold}Are you sure you entered correct information at your command arguments?${RESET} [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY]) 
         echo -e "Initializing...\n"
@@ -111,14 +111,18 @@ echo -e "}" >> $confPath
 echo -e "  $confPath is created \n"
 
 echo -e "  Restarting PHP 7.2..."
-brew services restart php@7.2
+brew services restart php@7.2 >> /dev/null
 echo "  Restarting Nginx..."
-brew services restart nginx
+brew services restart nginx >> /dev/null 
 echo -e "\n  ${CF_green}Good to go.. If you need to edit conf file, type:${RESET}"
 echo -e "  ${CF_cyan}sublime /usr/local/etc/nginx/servers/$domain$tld.conf${RESET}\n"
 echo -e "  Browse at    : ${CF_green}${TX_bold}http://$domain$tld/${RESET}"
 echo -e "  DocumentRoot : ${CF_cyan}${TX_bold}$HOME/Sites/$domain$docRootFolder ${RESET}\n"
 
-echo "  Enabling $domain at /etc/hosts... Running v-add-domain ..."
+echo -e "  Enabling ${CF_green}${TX_bold}$domain$tld${RESET} at ${CF_yellow}/etc/hosts${RESET}... Activating ${CF_magenta}${TX_bold}v-add-domain...${RESET}\n"
 # sudo echo "127.0.0.1 $domain$tld" >> /etc/hosts
 v-add-domain $domain$tld
+
+echo -e "\n${CF_magenta}${TX_bold}P.S. Remember to check your running brew services:\n${RESET}"
+brew services list
+exit
