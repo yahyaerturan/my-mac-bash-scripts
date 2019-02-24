@@ -115,7 +115,7 @@ brew services restart php@7.2
 echo "  Restarting Nginx..."
 brew services restart nginx
 echo -e "\n  ${CF_green}Good to go.. If you need to edit conf file, type:${RESET}"
-echo -e "  ${CF_cyan}sublime /etc/nginx/servers/$domain$tld.conf${RESET}\n"
+echo -e "  ${CF_cyan}sublime /usr/local/etc/nginx/servers/$domain$tld.conf${RESET}\n"
 echo -e "  Browse at    : ${CF_green}${TX_bold}http://$domain$tld/${RESET}"
 echo -e "  DocumentRoot : ${CF_cyan}${TX_bold}$HOME/Sites/$domain$docRootFolder ${RESET}\n"
 
