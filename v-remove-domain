@@ -21,9 +21,9 @@ TX_bold=`tput bold`
 CLREOL=$'\x1B[K'
 RESET=`tput sgr0`
 
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo -e "\n  etc/hosts Setup by Yahya ERTURAN <root@yahyaerturan.com>${CLREOL}"
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo ${RESET};
 
 # Fetch paramaters
@@ -49,4 +49,3 @@ else
 		echo "$domain is removed from your /etc/hosts succesfully!";
 	fi
 fi
-
