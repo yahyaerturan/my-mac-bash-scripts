@@ -21,9 +21,9 @@ TX_bold=`tput bold`
 CLREOL=$'\x1B[K'
 RESET=`tput sgr0`
 
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo -e "\n  etc/hosts Setup by Yahya ERTURAN <root@yahyaerturan.com>${CLREOL}"
-echo -n "${BF_green}${CF_white}${TX_bold}${CLREOL}"
+echo -n "${BF_blue}${CF_white}${TX_bold}${CLREOL}"
 echo ${RESET};
 
 # Fetch paramaters
@@ -32,11 +32,11 @@ fakeIP=${2}
 
 if [[ -z $domain ]]; then
     echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
-    echo -e "\n  You must specify a domain name with .tld|com|net|org|tld:${CLREOL}\n${CLREOL}"
-    echo -e "  e.g. v-add-domain vayes-eys.local ${CLREOL}"
+    echo -e "\n  You must specify a domain name wit .tld|com|net|org|tld:${CLREOL}\n${CLREOL}"
+    echo -e "  e.g. vayes-eys.local ${CLREOL}"
     echo -n "${BF_red}${CF_white}${TX_bold}${CLREOL}"
     echo ${RESET}
-    exit
+    exit 0
 fi
 
 if [[ -z $fakeIP ]]; then
@@ -47,11 +47,13 @@ else
 fi
 
 if grep -q "$domain" /etc/hosts; then
-    echo "Your etc/hosts file now containes $domain:";
-    echo "***";
+    echo -e "\nYour etc/hosts file now contains $domain:";
+    echo -e "***${CF_green}${TX_bold}";
     cat /etc/hosts | grep "$domain";
-    echo "***";
-    echo "$domain is added succesfully!";
+    echo -e "${RESET}***";
+    echo -e "\n$domain is added succesfully!";
 else
     echo "An error occured. Adding $domain to etc/hosts is failed!";
 fi
+
+exit 0
